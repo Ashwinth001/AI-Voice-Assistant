@@ -1,0 +1,39 @@
+Creating Assistant...
+Creating verifier, brain, llm, security...
+Creating overlay...
+Overlay: app=True overlay=True
+STT backend: whisper (base.en)
+STT ready: True
+Assistant created. Running...
+Raw transcript: Okay.
+Command (after pause): Okay.
+Raw transcript: Okay. I want to face full on it. Okay. Alright. Okay. Okay. You can see. I'm going to take the camera off. Okay. I'm goi
+Command (after pause): Okay. I want to face full on it. Okay. Alright. Okay. Okay. You can see. I'm goi
+Raw transcript: So this is my new day.
+Command (after pause): So this is my new day.
+Raw transcript: Yeah.
+Command (after pause): Yeah.
+Raw transcript: So it's like the voice instead.
+Command (after pause): So it's like the voice instead.
+Raw transcript: small chat, small face.
+Command (after pause): small chat, small face.
+Raw transcript: I think.
+Command (after pause): I think.
+Raw transcript: So the voice recognition is
+Command (after pause): So the voice recognition is
+Raw transcript: not put that right now. It's not able to...
+Command (after pause): not put that right now. It's not able to...
+Raw transcript: Did it correctly?
+Command (after pause): Did it correctly?
+Raw transcript: Okay.
+Command (after pause): Okay.
+Raw transcript: Javis, remind me.
+Command (after pause): Javis, remind me.
+Raw transcript: to go to glass tomorrow.
+Command (after pause): to go to glass tomorrow.
+Raw transcript: I just need to remind
+Command (after pause): I just need to remind
+Raw transcript: and we'll see you in a little bit.
+Command (after pause): and we'll see you in a little bit.
+Raw transcript: with these tadpicks.
+Command (after pause): with these tadpicks.
