@@ -1,0 +1,42 @@
+# ARIA -- Python requirements
+# Install: pip install -r requirements.txt
+
+# Core voice
+faster-whisper>=1.0.3
+pyaudio>=0.2.14
+webrtcvad>=2.0.10
+noisereduce>=3.0.0
+pygame>=2.5.0
+
+# LLM
+ollama>=0.3.3
+
+# Memory
+chromadb>=0.5.0
+sentence-transformers>=3.0.0
+pdfplumber>=0.11.0
+
+# TTS
+piper-tts>=1.2.0
+gtts>=2.5.1
+# TTS>=0.22.0   # Uncomment for Tamil XTTS v2 (large, needs 6GB VRAM)
+
+# Agentic
+pyautogui>=0.9.54
+schedule>=1.2.2
+psutil>=5.9.0
+
+# Training (optional - uncomment when ready)
+# unsloth>=2024.11.10
+# trl>=0.11.0
+# transformers>=4.45.0
+# datasets>=2.20.0
+# peft>=0.12.0
+
+# Config
+pyyaml>=6.0.1
+
+# Utils
+numpy>=1.26.0
+python-pptx>=0.6.21
+playsound>=1.2.2

@@ -1,0 +1,85 @@
+app:
+  name: "JARVIS"
+  version: "1.0.0"
+  wake_word: "jarvis"
+  user_id: "ashwinth"
+  theme: "holographic"
+
+voice:
+  stt_model: "base.en"
+  stt_device: "cuda"
+  stt_compute: "int8"
+  language: "en"
+  vad_aggressiveness: 2.3
+  silence_threshold_ms: 10
+  noise_cancel: true
+
+tts:
+  engine: "piper"
+  piper_voice: "en_US-amy-medium"
+  piper_length_scale: 1.0
+  xtts_language: "ta"
+  filler_sounds: true
+
+llm:
+  provider: "ollama"
+  model: "phi3.5"
+  fallback_model: "gemma2:2b"
+  num_gpu: 1
+  num_predict: 1200
+  temperature: 0.7
+  num_ctx: 2048
+  stream: true
+  humor: true
+  personality: |
+    You are JARVIS, Ashwinth's personal AI assistant.
+    Rules you must ALWAYS follow:
+    1. Reply in 1-3 SHORT sentences only. Never write more than 3 sentences per reply.
+    2. Never use markdown, bullet points, asterisks, dashes, or bold text.
+    3. Never write "Follow-up Questions" or lists of questions.
+    4. Sound like a helpful friend, not a textbook.
+    5. If asked to open something, just confirm it briefly.
+    6. Add light humor occasionally but keep it short.
+    7. Never repeat yourself.
+
+memory:
+  chroma_path: "./data/chroma"
+  sessions_collection: "sessions"
+  knowledge_collection: "knowledge"
+  code_collection: "code"
+  top_k_results: 3
+
+training:
+  enabled: true
+  data_path: "./data/training"
+  min_quality: 0.7
+  min_turns: 30
+  schedule: "sunday"
+  schedule_time: "02:00"
+  gpu_enabled: false
+  cuda_device: "0"
+  lora_r: 16
+  lora_alpha: 32
+  epochs: 2
+  batch_size: 2
+
+cloud:
+  provider: "local"
+  oracle_namespace: ""
+  oracle_bucket: "jarvis-models"
+  oracle_region: "ap-mumbai-1"
+
+agentic:
+  code_output_dir: "C:/JARVISProjects"
+  editor: "code"
+  browser: "chrome"
+  admin_mode: false
+
+ui:
+  window_width: 600
+  window_height: 900
+  always_on_top: false
+  opacity: 0.97
+  show_metrics: true
+  show_waveform: true
+  hotkey: "ctrl+shift+j"
