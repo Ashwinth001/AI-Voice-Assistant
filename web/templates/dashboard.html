@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - {{ user.ai_name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%); }
+        .glow { box-shadow: 0 0 60px rgba(56, 189, 248, 0.3); }
+        .card-glow { box-shadow: 0 0 30px rgba(56, 189, 248, 0.15); }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-white">
+    <nav class="container mx-auto px-6 py-4 flex justify-between items-center border-b border-slate-700">
+        <div class="flex items-center space-x-2">
+            <div class="w-10 h-10 bg-cyan-500 rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 12a1 1 0 11-2 0 1 1 0 012 0zm6 0a1 1 0 11-2 0 1 1 0 012 0z"/>
+                </svg>
+            </div>
+            <span class="text-2xl font-bold text-cyan-400">{{ user.ai_name }}</span>
+        </div>
+        <div class="flex items-center space-x-6">
+            <a href="/settings" class="text-gray-300 hover:text-white transition">Settings</a>
+            <a href="/logout" class="text-gray-400 hover:text-white transition">Logout</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 py-12">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="max-w-4xl mx-auto mb-8">
+            {% for category, message in messages %}
+            <div class="p-4 rounded-lg {% if category == 'error' %}bg-red-500/20 border border-red-500{% else %}bg-green-500/20 border border-green-500{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="max-w-4xl mx-auto">
+            <!-- Welcome Section -->
+            <div class="bg-slate-800/50 rounded-2xl p-8 card-glow mb-8">
+                <div class="flex items-center justify-between flex-wrap gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-2">Welcome back!</h1>
+                        <p class="text-gray-400">Your AI <span class="text-cyan-400 font-semibold">{{ user.ai_name }}</span> is ready to serve you.</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <a href="/download-config" 
+                           class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 px-6 py-3 rounded-xl font-medium transition">
+                            Download Config
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-slate-800/50 rounded-xl p-6 card-glow">
+                    <div class="text-gray-400 text-sm mb-1">AI Name</div>
+                    <div class="text-2xl font-bold text-cyan-400">{{ user.ai_name }}</div>
+                </div>
+                <div class="bg-slate-800/50 rounded-xl p-6 card-glow">
+                    <div class="text-gray-400 text-sm mb-1">Theme</div>
+                    <div class="text-2xl font-bold capitalize">{{ user.ai_theme }}</div>
+                </div>
+                <div class="bg-slate-800/50 rounded-xl p-6 card-glow">
+                    <div class="text-gray-400 text-sm mb-1">Features</div>
+                    <div class="text-2xl font-bold">{{ user.features|length }}</div>
+                </div>
+            </div>
+
+            <!-- Setup Instructions -->
+            <div class="bg-slate-800/50 rounded-2xl p-8 card-glow mb-8">
+                <h2 class="text-xl font-semibold mb-6">Setup Instructions</h2>
+                <div class="space-y-4">
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 bg-cyan-500/20 rounded-full flex items-center justify-center text-cyan-400 font-bold mr-4 flex-shrink-0">1</div>
+                        <div>
+                            <h3 class="font-medium mb-1">Download the Installer</h3>
+                            <p class="text-gray-400 text-sm">Download ASTRA-Setup.exe from the releases page and run it.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 bg-cyan-500/20 rounded-full flex items-center justify-center text-cyan-400 font-bold mr-4 flex-shrink-0">2</div>
+                        <div>
+                            <h3 class="font-medium mb-1">Download Your Config</h3>
+                            <p class="text-gray-400 text-sm">Click "Download Config" above and save config.yaml to your ASTRA folder.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 bg-cyan-500/20 rounded-full flex items-center justify-center text-cyan-400 font-bold mr-4 flex-shrink-0">3</div>
+                        <div>
+                            <h3 class="font-medium mb-1">Say "{{ user.ai_name }}"</h3>
+                            <p class="text-gray-400 text-sm">Your AI will wake up and wait for your command!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Features -->
+            <div class="bg-slate-800/50 rounded-2xl p-8 card-glow">
+                <h2 class="text-xl font-semibold mb-6">Your Active Features</h2>
+                <div class="grid md:grid-cols-2 gap-4">
+                    {% for feature in features %}
+                    {% if feature.id in user.features %}
+                    <div class="flex items-center p-4 bg-slate-700/30 rounded-xl">
+                        <div class="w-3 h-3 bg-green-400 rounded-full mr-3"></div>
+                        <div>
+                            <div class="font-medium">{{ feature.name }}</div>
+                            <div class="text-sm text-gray-400">{{ feature.desc }}</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                <a href="/settings" class="inline-block mt-6 text-cyan-400 hover:text-cyan-300">
+                    Manage features →
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

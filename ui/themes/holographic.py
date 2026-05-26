@@ -271,26 +271,24 @@ class HolographicUI:
         self._sv = {}
 
         sections = {
-            "APP": [
-                ("name",      cfg["app"]["name"],      "Assistant name"),
-                ("wake_word", cfg["app"]["wake_word"],  "Wake word (what you say to activate)"),
-                ("user_id",   cfg["app"]["user_id"],    "Your user ID"),
-                ("theme",     cfg["app"]["theme"],      "Theme (holographic/neon_glass/minimal)"),
+            "IDENTITY": [
+                ("ai_name",   cfg["app"].get("ai_name", ""),   "AI Name (becomes wake word)"),
+                ("user_name", cfg["app"].get("user_name", "User"),   "Your Name"),
+                ("theme",     cfg["app"].get("theme", "holographic"),"Theme (holographic/neon_glass/minimal)"),
             ],
             "LLM": [
-                ("model",       cfg["llm"]["model"],        "Ollama model name"),
-                ("num_gpu",     str(cfg["llm"]["num_gpu"]), "GPU layers (0=CPU only)"),
-                ("temperature", str(cfg["llm"]["temperature"]), "Temperature (0.1-1.0)"),
+                ("model",       cfg["llm"].get("model", "llama-3.3-70b-versatile"), "LLM model name"),
+                ("temperature", str(cfg["llm"].get("temperature", 0.7)), "Temperature (0.1-1.0)"),
             ],
             "VOICE": [
-                ("stt_model",  cfg["voice"]["stt_model"],  "Whisper model (tiny/base/medium)"),
-                ("language",   cfg["voice"]["language"],   "Language (auto/en/ta/hi)"),
-                ("silence_threshold_ms", str(cfg["voice"]["silence_threshold_ms"]),
+                ("stt_model",  cfg["voice"].get("stt_model", "base.en"),  "Whisper model (tiny/base/medium)"),
+                ("language",   cfg["voice"].get("language", "en"),   "Language (auto/en/ta/hi)"),
+                ("silence_threshold_ms", str(cfg["voice"].get("silence_threshold_ms", 800)),
                                                             "Silence ms to end sentence"),
             ],
             "TTS": [
-                ("piper_voice",       cfg["tts"]["piper_voice"],        "Piper voice name"),
-                ("piper_length_scale",str(cfg["tts"]["piper_length_scale"]), "Speed (1.0=normal, 1.1=slower)"),
+                ("piper_voice",       cfg["tts"].get("piper_voice", "en_US-amy-medium"), "Piper voice name"),
+                ("piper_length_scale",str(cfg["tts"].get("piper_length_scale", 1.0)), "Speed (1.0=normal, 1.1=slower)"),
             ],
         }
 
@@ -313,25 +311,30 @@ class HolographicUI:
 
         def save_all():
             try:
-                cfg = load_config()
-                cfg["app"]["name"]       = self._sv["APP.name"].get()
-                cfg["app"]["wake_word"]  = self._sv["APP.wake_word"].get()
-                cfg["app"]["user_id"]    = self._sv["APP.user_id"].get()
-                cfg["app"]["theme"]      = self._sv["APP.theme"].get()
-                cfg["llm"]["model"]      = self._sv["LLM.model"].get()
-                cfg["llm"]["num_gpu"]    = int(self._sv["LLM.num_gpu"].get())
-                cfg["llm"]["temperature"]= float(self._sv["LLM.temperature"].get())
-                cfg["voice"]["stt_model"]= self._sv["VOICE.stt_model"].get()
-                cfg["voice"]["language"] = self._sv["VOICE.language"].get()
-                cfg["voice"]["silence_threshold_ms"] = int(
-                    self._sv["VOICE.silence_threshold_ms"].get())
-                cfg["tts"]["piper_voice"]        = self._sv["TTS.piper_voice"].get()
-                cfg["tts"]["piper_length_scale"] = float(
-                    self._sv["TTS.piper_length_scale"].get())
-                save_config(cfg)
+                from core.config_generator import update_config
+                
+                ai_name = self._sv["IDENTITY.ai_name"].get().strip() or "Astra"
+                user_name = self._sv["IDENTITY.user_name"].get().strip() or "User"
+                
+                # Use dynamic config updater - auto-generates personality
+                update_config(
+                    ai_name=ai_name,
+                    user_name=user_name,
+                    theme=self._sv["IDENTITY.theme"].get(),
+                    model=self._sv["LLM.model"].get(),
+                    temperature=float(self._sv["LLM.temperature"].get()),
+                    stt_model=self._sv["VOICE.stt_model"].get(),
+                    language=self._sv["VOICE.language"].get(),
+                    silence_threshold_ms=int(self._sv["VOICE.silence_threshold_ms"].get()),
+                    piper_voice=self._sv["TTS.piper_voice"].get(),
+                    piper_length_scale=float(self._sv["TTS.piper_length_scale"].get()),
+                )
+                
                 messagebox.showinfo(self.app_name,
-                    "Settings saved. Restart the app to apply all changes.")
+                    f"Settings saved!\n\nAI Name: {ai_name}\nWake Word: {ai_name.lower()}\n\nRestart the app to apply changes.")
             except Exception as ex:
+                import traceback
+                traceback.print_exc()
                 messagebox.showerror("Error", str(ex))
 
         holo_btn(inner, "SAVE AND RESTART REQUIRED", save_all).pack(pady=12)

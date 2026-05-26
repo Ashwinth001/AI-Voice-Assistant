@@ -25,7 +25,7 @@ class STTEngine:
         device, compute = _detect_device()
 
         # Use base.en on CPU - much better for Indian English than tiny.en
-        # tiny.en mishears "Jarvis" as "Job is", "service" etc.
+        # tiny.en can mishear AI names (e.g., "Astra" as "extra", etc.)
         if device == "cuda":
             model_name = _cfg["voice"]["stt_model"]
             print(f"[STT] CUDA found - using {model_name}")

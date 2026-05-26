@@ -1,0 +1,15 @@
+# Secrets and deploy artifacts
+cloud/.env.deploy
+cloud/keys/
+cloud/astra_bundle.zip
+cloud/instance_launch.json
+cloud/deployment_config.json
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# Local data
+data/

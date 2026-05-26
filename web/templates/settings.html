@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - {{ user.ai_name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%); }
+        .glow { box-shadow: 0 0 60px rgba(56, 189, 248, 0.3); }
+        .card-glow { box-shadow: 0 0 30px rgba(56, 189, 248, 0.15); }
+        .theme-card { transition: all 0.3s ease; cursor: pointer; }
+        .theme-card:hover { transform: translateY(-4px); }
+        .theme-card.selected { border-color: #22d3ee; box-shadow: 0 0 20px rgba(34, 211, 238, 0.4); }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-white">
+    <nav class="container mx-auto px-6 py-4 flex justify-between items-center border-b border-slate-700">
+        <div class="flex items-center space-x-2">
+            <div class="w-10 h-10 bg-cyan-500 rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 12a1 1 0 11-2 0 1 1 0 012 0zm6 0a1 1 0 11-2 0 1 1 0 012 0z"/>
+                </svg>
+            </div>
+            <span class="text-2xl font-bold text-cyan-400">{{ user.ai_name }}</span>
+        </div>
+        <div class="flex items-center space-x-6">
+            <a href="/dashboard" class="text-gray-300 hover:text-white transition">Dashboard</a>
+            <a href="/logout" class="text-gray-400 hover:text-white transition">Logout</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 py-12">
+        <div class="max-w-3xl mx-auto">
+            <h1 class="text-3xl font-bold mb-8">Settings</h1>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="mb-8">
+                {% for category, message in messages %}
+                <div class="p-4 rounded-lg {% if category == 'error' %}bg-red-500/20 border border-red-500{% else %}bg-green-500/20 border border-green-500{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <form method="POST" class="space-y-8">
+                <!-- AI Name -->
+                <section class="bg-slate-800/50 rounded-2xl p-8 card-glow">
+                    <h2 class="text-xl font-semibold mb-6">AI Identity</h2>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">AI Name (Wake Word)</label>
+                        <input type="text" name="ai_name" required 
+                               class="w-full md:w-1/2 px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl focus:border-cyan-500 focus:outline-none transition text-xl"
+                               value="{{ user.ai_name }}">
+                        <p class="text-sm text-gray-500 mt-2">This is what you'll say to wake up your AI.</p>
+                    </div>
+                </section>
+
+                <!-- Theme -->
+                <section class="bg-slate-800/50 rounded-2xl p-8 card-glow">
+                    <h2 class="text-xl font-semibold mb-6">Theme</h2>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        {% for theme in themes %}
+                        <label class="theme-card block">
+                            <input type="radio" name="ai_theme" value="{{ theme.id }}" class="hidden" 
+                                   {% if theme.id == user.ai_theme %}checked{% endif %}>
+                            <div class="theme-card border-2 border-slate-600 rounded-xl p-6 text-center {% if theme.id == user.ai_theme %}selected{% endif %}"
+                                 onclick="selectTheme(this)">
+                                <div class="w-16 h-16 mx-auto mb-4 rounded-full" style="background: {{ theme.color }}; box-shadow: 0 0 30px {{ theme.color }}40;"></div>
+                                <h3 class="font-semibold mb-1">{{ theme.name }}</h3>
+                                <p class="text-sm text-gray-400">{{ theme.desc }}</p>
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <!-- Features -->
+                <section class="bg-slate-800/50 rounded-2xl p-8 card-glow">
+                    <h2 class="text-xl font-semibold mb-6">Features</h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        {% for feature in features %}
+                        <div>
+                            <input type="checkbox" name="features" value="{{ feature.id }}" 
+                                   id="feature_{{ feature.id }}" class="hidden" 
+                                   {% if feature.id in user.features %}checked{% endif %}>
+                            <label for="feature_{{ feature.id }}" class="block cursor-pointer">
+                                <div class="feature-card border border-slate-600 rounded-xl p-4 flex items-start hover:bg-slate-700/30 transition">
+                                    <div class="w-5 h-5 border-2 border-slate-500 rounded mr-3 mt-0.5 flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-3 h-3 text-cyan-400 {% if feature.id not in user.features %}hidden{% endif %} check-icon" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">{{ feature.name }}</h4>
+                                        <p class="text-sm text-gray-400">{{ feature.desc }}</p>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <!-- Submit -->
+                <div class="flex gap-4">
+                    <button type="submit" 
+                            class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 px-8 py-3 rounded-xl font-semibold transition">
+                        Save Changes
+                    </button>
+                    <a href="/dashboard" 
+                       class="border border-slate-600 hover:border-slate-500 px-8 py-3 rounded-xl font-medium transition">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        function selectTheme(element) {
+            document.querySelectorAll('.theme-card > div').forEach(el => el.classList.remove('selected'));
+            element.querySelector('div').classList.add('selected');
+        }
+
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            const updateVisual = () => {
+                const icon = checkbox.parentElement.querySelector('.check-icon');
+                if (checkbox.checked) {
+                    icon.classList.remove('hidden');
+                } else {
+                    icon.classList.add('hidden');
+                }
+            };
+            checkbox.addEventListener('change', updateVisual);
+        });
+    </script>
+</body>
+</html>

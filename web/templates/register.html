@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your AI - ASTRA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%); }
+        .glow { box-shadow: 0 0 60px rgba(56, 189, 248, 0.3); }
+        .card-glow { box-shadow: 0 0 30px rgba(56, 189, 248, 0.15); }
+        .theme-card { transition: all 0.3s ease; cursor: pointer; }
+        .theme-card:hover { transform: translateY(-4px); }
+        .theme-card.selected { border-color: #22d3ee; box-shadow: 0 0 20px rgba(34, 211, 238, 0.4); }
+        .feature-card { transition: all 0.2s ease; }
+        .feature-card:hover { background: rgba(51, 65, 85, 0.7); }
+        input[type="checkbox"]:checked + label .feature-card { border-color: #22d3ee; background: rgba(34, 211, 238, 0.1); }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-white">
+    <nav class="container mx-auto px-6 py-4">
+        <a href="/" class="flex items-center space-x-2 w-fit">
+            <div class="w-10 h-10 bg-cyan-500 rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 12a1 1 0 11-2 0 1 1 0 012 0zm6 0a1 1 0 11-2 0 1 1 0 012 0z"/>
+                </svg>
+            </div>
+            <span class="text-2xl font-bold text-cyan-400">ASTRA</span>
+        </a>
+    </nav>
+
+    <main class="container mx-auto px-6 py-12">
+        <div class="max-w-3xl mx-auto">
+            <h1 class="text-4xl font-bold text-center mb-2">Create Your AI</h1>
+            <p class="text-gray-400 text-center mb-12">Personalize your ASTRA assistant</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="mb-8">
+                {% for category, message in messages %}
+                <div class="p-4 rounded-lg {% if category == 'error' %}bg-red-500/20 border border-red-500{% else %}bg-green-500/20 border border-green-500{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <form method="POST" class="space-y-10">
+                <!-- Account Info -->
+                <section class="bg-slate-800/50 rounded-2xl p-8 card-glow">
+                    <h2 class="text-xl font-semibold mb-6 flex items-center">
+                        <span class="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center text-sm mr-3">1</span>
+                        Account Information
+                    </h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Email Address</label>
+                            <input type="email" name="email" required 
+                                   class="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl focus:border-cyan-500 focus:outline-none transition"
+                                   placeholder="your@email.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Password</label>
+                            <input type="password" name="password" required minlength="6"
+                                   class="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl focus:border-cyan-500 focus:outline-none transition"
+                                   placeholder="At least 6 characters">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- AI Name -->
+                <section class="bg-slate-800/50 rounded-2xl p-8 card-glow">
+                    <h2 class="text-xl font-semibold mb-6 flex items-center">
+                        <span class="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center text-sm mr-3">2</span>
+                        Name Your AI
+                    </h2>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">AI Name (this becomes your wake word)</label>
+                        <input type="text" name="ai_name" required 
+                               class="w-full md:w-1/2 px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl focus:border-cyan-500 focus:outline-none transition text-xl"
+                               placeholder="ASTRA" value="ASTRA">
+                        <p class="text-sm text-gray-500 mt-2">You'll say this name to activate your AI. Example: "Nova, open Chrome"</p>
+                    </div>
+                </section>
+
+                <!-- Theme Selection -->
+                <section class="bg-slate-800/50 rounded-2xl p-8 card-glow">
+                    <h2 class="text-xl font-semibold mb-6 flex items-center">
+                        <span class="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center text-sm mr-3">3</span>
+                        Choose Your Theme
+                    </h2>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        {% for theme in themes %}
+                        <label class="theme-card block">
+                            <input type="radio" name="ai_theme" value="{{ theme.id }}" class="hidden" {% if loop.first %}checked{% endif %}>
+                            <div class="theme-card border-2 border-slate-600 rounded-xl p-6 text-center {% if loop.first %}selected{% endif %}"
+                                 onclick="selectTheme(this)">
+                                <div class="w-16 h-16 mx-auto mb-4 rounded-full" style="background: {{ theme.color }}; box-shadow: 0 0 30px {{ theme.color }}40;"></div>
+                                <h3 class="font-semibold mb-1">{{ theme.name }}</h3>
+                                <p class="text-sm text-gray-400">{{ theme.desc }}</p>
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <!-- Features -->
+                <section class="bg-slate-800/50 rounded-2xl p-8 card-glow">
+                    <h2 class="text-xl font-semibold mb-6 flex items-center">
+                        <span class="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center text-sm mr-3">4</span>
+                        Select Features
+                    </h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        {% for feature in features %}
+                        <div>
+                            <input type="checkbox" name="features" value="{{ feature.id }}" 
+                                   id="feature_{{ feature.id }}" class="hidden" {% if feature.default %}checked{% endif %}>
+                            <label for="feature_{{ feature.id }}" class="block cursor-pointer">
+                                <div class="feature-card border border-slate-600 rounded-xl p-4 flex items-start">
+                                    <div class="w-5 h-5 border-2 border-slate-500 rounded mr-3 mt-0.5 flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-3 h-3 text-cyan-400 hidden check-icon" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">{{ feature.name }}</h4>
+                                        <p class="text-sm text-gray-400">{{ feature.desc }}</p>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <!-- Submit -->
+                <div class="text-center">
+                    <button type="submit" 
+                            class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 px-12 py-4 rounded-xl text-lg font-semibold transition transform hover:scale-105 glow">
+                        Create My AI
+                    </button>
+                    <p class="text-gray-500 mt-4">
+                        Already have an account? <a href="/login" class="text-cyan-400 hover:text-cyan-300">Login</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        function selectTheme(element) {
+            document.querySelectorAll('.theme-card > div').forEach(el => el.classList.remove('selected'));
+            element.querySelector('div').classList.add('selected');
+        }
+
+        // Update checkbox visuals
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            const updateVisual = () => {
+                const icon = checkbox.parentElement.querySelector('.check-icon');
+                if (checkbox.checked) {
+                    icon.classList.remove('hidden');
+                } else {
+                    icon.classList.add('hidden');
+                }
+            };
+            checkbox.addEventListener('change', updateVisual);
+            updateVisual();
+        });
+    </script>
+</body>
+</html>
